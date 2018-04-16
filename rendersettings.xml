@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<artwork>
+
+	<!--
+		RENDERSETTINGS:
+		colorMode	 			- boolean (true or false)
+		imgFileFormatOutput		- string (default .png)
+								  Define the output file format for your rendered image.
+								  Options are: .png, .PNG, .jpg, .JPG, .jpeg, .JPEG (Note: Do not forget the dot)
+		imgFilePath 			- string (full path to image)
+		resultBackground		- QColor, range RGB (0,0,0) back to (255,255,255) white
+								  set background color of result image, default black.
+		printThreshold			- unsigned integer, default 35. Since we move rectangles over an 						  
+							  	  image we decide with this given threshold if we print or not.
+							  	  A low printThreshold will only print artworks with a low variance within a rectangle. A side effect could be that huge artworks would not be printed.
+							  	  If you like to allow larger artworks to be print update this starting printThreshold with a higher value.
+		printThresholdStepSize 	- unsigned integer (default: 15).
+								  A computing round is over if we finished moving one rectangle size over the image.
+								  After this we add this threshold value to printThreshold to allow more and more artworks to be print.	
+		meanThresholdMin		- unsigned int, range [0-255] (black to white)
+								  If the background in your image is already black maybe you do not want to print black artworks on black. Using this meanThresholdMin allows you to avoid this
+								  and saves some computational time. Good value for a black background is 13. (default: 0)
+		meanThresholdMax		- unsigned int, range [0-255] (black to white)
+								  Same as meanThresholdMin. If your background image is white, do not print white on white. Avoid this by using this meanThresholdMax.
+								  Good value for white backgrounds is 240. (default: 0)
+		saveUsedImg				- boolean (true or false)
+								  To avoid printing over an existing artwork we use a white image called usedImg. Everytime we print our result artwork on our result image,
+								  we also print a black arwork object on this usedImg. Before we start printing our new artwok, 
+								  we check this usedImg if there is any black color in our new area where we want to print our next artwork. (default: false)
+
+	-->
+
+	<rendersettings>
+		<boolean name="colorMode" value="true"/>
+		<string name="imgFileFormatOutput" value=".png" />
+		<string name="imgFilePath" value=""/>
+		<color name="resultBackground" value="0,0,0"/>
+		<integer name="printTheshold" value="75"/>
+		<integer name="printThesholdStepSize" value="15"/>
+		<integer name="meanThresholdMin" value="0"/>
+		<integer name="meanThresholdMax" value="255"/>
+		<boolean name="saveUsedImg" value="false"/>
+	</rendersettings>
+
+	<!-- WORDS
+		renderWords				- boolean [true or false]
+								  enables the artwork words which creates an image consisting of your input text
+		fontPath				- string (full path to custom font .tff)
+								  Default font is QFont("Times"). 
+								  From Qt: "Currently only TrueType fonts, TrueType font collections, and OpenType fonts are supported."
+		text					- string (default: c0op)
+								  This text will be printed on your result image.
+		fontSizeStart			- float (default: 35)
+								  Starting font size. 
+		fontStepSize			- float (default: 1)
+								  After each round we shrink our fontSize by this fontStepSize value by subtraction.
+		fontMinSize				- float (default: 0)
+								  Print artworks from size fontStartSize to fontMinSize.
+
+	-->
+
+	<words>
+		<boolean name="renderWords" value="false"/>
+		<string name="fontPath" value="/home/ckreisl/QtWorkspace/WordPortrait/fonts/font1.ttf"/>
+		<string name="text" value="Genius"/>
+		<float name="fontStartSize" value="35"/>
+		<float name="fontStepSize" value="1"/>
+		<float name="fontMinSize" value="0"/>
+	</words>
+
+	<!-- TRIANGLES
+		renderTriangles			- boolean [true or false]
+								  enables the artwork triangles
+		printSolidTriangles		- boolean [true or false] (default: false)
+								  Print filled triangles if printSolidTriangles is true
+		bboxWidth 				- unsigned integer (default: 35)
+								  Define the width of the rectangle where a triangle will be generated and printed
+		bboxHeight 				- unsigned integer (default: 35)
+								  Define the height of the rectangle where a triangle will be generated and printed
+		bboxStepSizeWidth		- unsigned integer (default: 1)
+								  The rectangle width will be shrink by this value after each round
+		bboxStepSizeHeight		- unsigned integer (default: 1)
+								  The rectangle height will be shrink by this value after each round
+		bboxMinSizeWidth		- unsigned integer (default: 0)
+								  Print triangles from bboxWidth to bboxMinSizeWidth (Note: as long width > 0 and height > 0)
+		bboxMinSizeHeight		- unsigned integer (default: 0)
+								  Print triangles from bboxHeight to bboxMinSizeHeight (Note: as long width > 0 and height > 0)
+		triangleOffsetX			- unsigned integer (default: 0)
+								  Offset in x direction, which leads to more free spaces between printed triangles (Note: triangleOffsetX must be smaller than bboxMinSizeWidth)
+		triangleOffsetY			- unsigned integer (default: 0)
+								  Offset in y direction, which leads to more free spaces between printed triangles (Note: triangleOffsetY must be smaller than bboxMinSizeHeight)
+	-->
+
+	<triangles>
+		<boolean name="renderTriangles" value="true"/>
+		<boolean name="printSolidTriangles" value="true"/>
+		<integer name="bboxWidth" value="45"/>
+		<integer name="bboxHeight" value="45"/>
+		<integer name="bboxStepSizeWidth" value="1"/>
+		<integer name="bboxStepSizeHeight" value="1"/>
+		<integer name="bboxMinSizeWidth" value="0"/>
+		<integer name="bboxMinSizeHeight" value="0"/>
+		<integer name="triangleOffsetX" value="0"/>
+		<integer name="triangleOffsetY" value="0"/>
+	</triangles>
+
+	<!-- CIRCLES
+		renderCircles			- boolean [true or false]
+								  enables the artwork circles
+		printSolidTriangles     - boolean [true or false] (default: false)
+								  Print filled circles if printSolidCircles is true.
+		radiusX 				- unsigned integer (default: 8)
+								  Radius of circle in x direction
+		radiusY 				- unsigned integer (default: 8)
+								  Radius of circle in y direction
+		radiusXStepSize		    - unsigned integer (default: 1)
+								  Shrink radiusX by radiusXStepSize each round
+		radiusYStepSize			- unsigned integer (default: 1)
+								  Shrink radiusY by radiusYStepSize each round
+		minRadiusX				- unsigned int (default: 0)
+							      Min radiusX size which will be printed
+		minRadiusY				- unsigned int (default: 0)
+								  Min radiusY size which will be printed
+		radiusOffsetX			- unsigned integer (default: 0)
+								  Offset in x direction, which leads to more free spaces between printed circles (Note: radiusOffsetX must be smaller than minRadiusX)
+		radiusOffsetY			- unsigned integer (default: 0)
+							      Offset in y direction, which leads to more free spaces between printed circles (Note: radiusOffsetY must be smaller than minRadiusY)
+	-->
+
+	<circles>
+		<boolean name="renderCircles" value="false"/>
+		<boolean name="printSolidCircles" value="false"/>
+		<integer name="radiusX" value="10"/>
+		<integer name="radiusY" value="10"/>
+		<integer name="radiusXStepSize" value="1"/>
+		<integer name="radiusYStepSize" value="1"/>
+		<integer name="minRadiusX" value="0"/>
+		<integer name="minRadiusY" value="0"/>
+		<integer name="radiusOffsetX" value="0"/>
+		<integer name="radiusOffsetY" value="0"/>
+	</circles>
+
+	<!-- RECTANGLES
+		renderRectangles 		- boolean [true or false]
+								  enables the artwork rectangles
+		printSolidRectangles	- boolean [true or false] (default: false)
+								  Print filled rectangles variable is set to true
+		rectWidth 				- unsigned integer (default: 35)
+								  Width of rectangle
+		rectHeight 				- unsigned integer (default: 35)
+								  Height of rectangle
+		rectStepSizeWidth		- unsigned int (default: 1)
+								  Shrink rectWidth by rectStepSizeWidth each round
+		rectStepSizeHeight		- unsigned int (default: 1)
+								  Shrink rectHeight by rectStepSizeHeight each round
+		rectMinWidth 			- unsigned int (default: 0)
+								  Min rectWidth which will be printed
+		rectMinHeight 			- unsigned int (default: 0)
+								  Min rectHeight which will be printed
+		rectOffsetX				- unsigned int (default: 0)								  
+								  Offset in x direction, which leads to more free spaces between printed rectangles (Note: rectOffsetX must be smaller than rectMinWidth)
+		rectOffsetY				- unsigned int (default: 0)								  
+								  Offset in y direction, which leads to more free spaces between printed rectangles (Note: rectOffsetY must be smaller than rectMinHeight)
+	-->
+
+	<rectangles>
+		<boolean name="renderRectangles" value="false" />
+		<boolean name="printSolidRectangles" value="true" />
+		<integer name="rectWidth" value="35"/>
+		<integer name="rectHeight" value="35"/>
+		<integer name="rectStepSizeWidth" value="1"/>
+		<integer name="rectStepSizeHeight" value="1"/>		
+		<integer name="rectMinWidth" value="4"/>
+		<integer name="rectMinHeight" value="4"/>
+		<integer name="rectOffsetX" value="5"/>
+		<integer name="rectOffsetY" value="5"/>
+	</rectangles>
+
+</artwork>
