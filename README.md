@@ -13,7 +13,7 @@ Render settings in XML file:
 
 ```
 <rendersettings>
-  <boolean name="colorMode" value="true"/>
+  <boolean name="colorMode" value="false"/>
   <string name="imgFileFormatOutput" value=".png" />
   <string name="imgFilePath" value="<path_to_einstein_image>"/>
   <color name="resultBackground" value="0,0,0"/>
