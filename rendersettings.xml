@@ -32,13 +32,13 @@
 	-->
 
 	<rendersettings>
-		<boolean name="colorMode" value="true"/>
+		<boolean name="colorMode" value="false"/>
 		<string name="imgFileFormatOutput" value=".png" />
-		<string name="imgFilePath" value=""/>
+		<string name="imgFilePath" value="_PATH_TO_IMAGE"/>
 		<color name="resultBackground" value="0,0,0"/>
 		<integer name="printTheshold" value="75"/>
 		<integer name="printThesholdStepSize" value="15"/>
-		<integer name="meanThresholdMin" value="0"/>
+		<integer name="meanThresholdMin" value="13"/>
 		<integer name="meanThresholdMax" value="255"/>
 		<boolean name="saveUsedImg" value="false"/>
 	</rendersettings>
@@ -61,8 +61,8 @@
 	-->
 
 	<words>
-		<boolean name="renderWords" value="false"/>
-		<string name="fontPath" value="/home/ckreisl/QtWorkspace/WordPortrait/fonts/font1.ttf"/>
+		<boolean name="renderWords" value="true"/>
+		<string name="fontPath" value="_PATH_TO_FONT_"/>
 		<string name="text" value="Genius"/>
 		<float name="fontStartSize" value="35"/>
 		<float name="fontStepSize" value="1"/>
@@ -93,7 +93,7 @@
 	-->
 
 	<triangles>
-		<boolean name="renderTriangles" value="true"/>
+		<boolean name="renderTriangles" value="false"/>
 		<boolean name="printSolidTriangles" value="true"/>
 		<integer name="bboxWidth" value="45"/>
 		<integer name="bboxHeight" value="45"/>

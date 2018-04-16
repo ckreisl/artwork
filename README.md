@@ -7,6 +7,39 @@ Till 2015 this project was put on hold. In January, 2018 I started to refactore 
 ## Word Portrait
 ![Word Portrait](images/einstein_words_grey.png)
 
+For the result above i used this [Image](http://www.abc.net.au/news/image/2912674-3x2-940x627.jpg) of Albert Einstein with the free [Font](https://www.1001freefonts.com/28-days-later.font) from [www.1001freefonts.com](www.1001freefonts.com).
+
+Render settings in XML file:
+
+```
+<rendersettings>
+  <boolean name="colorMode" value="true"/>
+  <string name="imgFileFormatOutput" value=".png" />
+  <string name="imgFilePath" value="<path_to_einstein_image>"/>
+  <color name="resultBackground" value="0,0,0"/>
+  <integer name="printTheshold" value="75"/>
+  <integer name="printThesholdStepSize" value="15"/>
+  <integer name="meanThresholdMin" value="13"/>
+  <integer name="meanThresholdMax" value="255"/>
+  <boolean name="saveUsedImg" value="false"/>
+</rendersettings>
+
+```
+
+Submodule **Words** settings:
+```
+<words>
+  <boolean name="renderWords" value="true"/>
+  <string name="fontPath" value="<path_to_font_28-days-later>"/>
+  <string name="text" value="Genius"/>
+  <float name="fontStartSize" value="35"/>
+  <float name="fontStepSize" value="1"/>
+  <float name="fontMinSize" value="0"/>
+</words>
+```
+
+Runtime: 37.478s (seconds).
+
 ## Dependencies
 * [Qt](https://www.qt.io/) (version 5.10)
 
