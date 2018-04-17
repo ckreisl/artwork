@@ -34,6 +34,9 @@ ArtWork::ArtWork(const PropertyList &props) {
     } catch(std::runtime_error &e) {
         std::cout << e.what() << std::endl;
         exit(-1);
+    } catch(...) {
+        std::cout << "An unknown error occurd while loading the image." << std::endl;
+        exit(-1);
     }
 
     usedImg = new QImage(*inputImg);

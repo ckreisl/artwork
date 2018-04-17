@@ -1,6 +1,6 @@
 # **Artwork**
 ## About
-The idea of this project was given by Jeff Clark's [Word Portrait](http://www.neoformix.com/2008/EinsteinWordPortrait.html) on his website [neoformix.com](http://www.neoformix.com), which shows an image of Albert Einstein only consisting of the text "Genius". Fiete Botschen and I decided to take this image as inspiration for an university Computer Vision course project in 2015. We successfully implemented an algorithm which generates Word Portraits like the one from Jeff Clark.
+The idea of this project was given by Jeff Clark's [Word Portrait](http://www.neoformix.com/2008/EinsteinWordPortrait.html) on his website [neoformix.com](http://www.neoformix.com), which shows an image of Albert Einstein only consisting of the text "Genius". Fiete Botschen and I decided to take this image as inspiration for an university Computer Vision course project in 2015. We successfully implemented an algorithm which generates similar Word Portraits like the one from Jeff Clark.
 
 Till 2015 this project was put on hold. In January, 2018 I started to refactore and optimize the code by using a summed-area table, which boosted the runtime overwhelming well. Furthermore I implemented some submodules based on this algorithm, which allows you to create images consisting of Triangles, Circles and Rectangles (and maybe more soon). Some examples can be seen below.
 

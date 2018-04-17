@@ -91,9 +91,15 @@ int app_artwork(int argc, char *argv[]) {
         bool renderRectangles = props->getBoolean("renderRectangles");
 
         if((QString::compare(outputName, "", Qt::CaseInsensitive) != 0) &&
-                (renderWords && renderTriangle && renderCircles && renderRectangles)) {
+                ((renderWords && renderTriangle) ||
+                 (renderCircles && renderRectangles) ||
+                 (renderWords && renderCircles) ||
+                 (renderTriangle && renderCircles) ||
+                 (renderRectangles && renderWords) ||
+                 (renderRectangles && renderCircles) ||
+                 (renderRectangles && renderTriangle))) {
             cout << "****************************************************************************************" << endl;
-            cout << "* NOTE: Multiple ArtWorks renderer are active and output name was set by user.         *" << endl;
+            cout << "* NOTE: Multiple ArtWorks renderer are active and an output name was specified.        *" << endl;
             cout << "* This will override your result image everytime an artwork renderer finishes his job! *" << endl;
             cout << "****************************************************************************************" << endl;
         } else if((!renderWords) && (!renderTriangle) && (!renderCircles) && (!renderRectangles)) {
