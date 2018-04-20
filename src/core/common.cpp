@@ -23,9 +23,7 @@ QString removeFileType(QString inputString) {
 }
 
 QString getImageNameFromPath(QString imgPath) {
-#ifdef __unix__
     int pos = imgPath.lastIndexOf(QChar('/'));
-#endif
     if(pos > -1)
         imgPath = imgPath.right(imgPath.length()-pos-1);
 

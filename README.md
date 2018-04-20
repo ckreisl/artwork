@@ -44,7 +44,8 @@ Runtime: 37.478s (seconds).
 * [Qt](https://www.qt.io/) (version 5.10)
 
 ## Usage
-If you installed Qt Creator IDE already you can easily open the project with the provided `.pro` file.
+If you installed Qt Creator IDE already you can easily open the project with the provided `.pro` file. Select the right Qt version and press configure. After that select `Release` as compile mode and press compile to build the program. For compiling Qt creates a folder outside the main directory called `build-ArtWork-...-Release` where the executable will be created.
+
 ### Linux
 All possible render options can be set within an XML file. Therefor you do not need to recompile the program every time you changed some parameters. The program runs via command line with:
 
@@ -69,7 +70,11 @@ You can use all image types which are supported by the Qt `QImage` class.
 (will come soon)
 
 ### MacOS
-(will come soon)
+Via command line navigate to your folder where the programm is built. Qt creates an `Artwork.app` where your executable file is stored. You can run the program via command line with:
+
+`ArtWork.app/Contents/MacOs/ArtWork [OPTIONS] <rendersettings.xml>`
+
+If you successfully builded the program a help message will be displayed. For more information check the **Linux** section. 
 
 ## Some more examples
 ![Lena Submodules](images/lena_modules.png)
