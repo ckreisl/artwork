@@ -69,7 +69,15 @@ You can use all image types which are supported by the Qt `QImage` class.
 (tested on Ubuntu 16.04 04/17/2018)
 
 ### Windows
-(will come soon)
+Running the programm via command line (Power Shell) could be a little bit inconvenient, since you have to copy `.dll` files from Qt into your directory where your ArtWork executable lies. Because of that simply run it within Qt Creator. Command line arguments can be set by the following steps:
+
+    1. On the left panel in Qt Creator select 'Project'. The symbol is an open-end wrench.
+    2. Select 'Run'
+    3. Set your command line arguments
+
+Finally build your program in `Release` mode and press run.
+
+(tested on Windows 10 64bit 04/20/2018)
 
 ### MacOS
 Via command line navigate to your folder where the programm is built. Qt creates an `Artwork.app` where your executable file is stored. You can run the program via command line with:
