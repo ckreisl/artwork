@@ -44,10 +44,10 @@ Runtime: 37.478s (seconds).
 * [Qt](https://www.qt.io/) (version 5.10)
 
 ## Usage
-If you installed Qt Creator IDE already you can easily open the project with the provided `.pro` file. Select the right Qt version and press configure. After that select `Release` as compile mode and press compile to build the program. For compiling Qt creates a folder outside the main directory called `build-ArtWork-...-Release` where the executable will be created.
+If you installed Qt Creator IDE already you can easily open the project with the provided `.pro` file. Select the right Qt version and press configure. After that select `Release` as compile mode and press compile to build the program. For compiling Qt creates a folder outside the main directory called `build-ArtWork-...-Release` where the executable will be created. All possible render options can be set within an XML file. Therefor you do not need to recompile the program every time you changed some parameters.
 
 ### Linux
-All possible render options can be set within an XML file. Therefor you do not need to recompile the program every time you changed some parameters. The program runs via command line with:
+Go to your built executable and open a terminal to run it via command line with. If everything works finde a help message should be printed.
 
 `./artwork [OPTIONS] <rendersettings.xml>`
 
@@ -66,6 +66,8 @@ For more information check https://github.com/ckreisl
 
 You can use all image types which are supported by the Qt `QImage` class.
 
+(tested on Ubuntu 16.04 04/17/2018)
+
 ### Windows
 (will come soon)
 
@@ -74,7 +76,9 @@ Via command line navigate to your folder where the programm is built. Qt creates
 
 `ArtWork.app/Contents/MacOs/ArtWork [OPTIONS] <rendersettings.xml>`
 
-If you successfully builded the program a help message will be displayed. For more information check the **Linux** section. 
+If you successfully built the program a help message will be displayed. For more information check the **Linux** section.
+
+(tested on MacOS High Sierra 04/20/2018)
 
 ## Some more examples
 ![Lena Submodules](images/lena_modules.png)

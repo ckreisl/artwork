@@ -32,7 +32,7 @@
 	-->
 
 	<rendersettings>
-		<boolean name="colorMode" value="false"/>
+		<boolean name="colorMode" value="true"/>
 		<string name="imgFileFormatOutput" value=".png" />
 		<string name="imgFilePath" value="_PATH_TO_IMAGE"/>
 		<color name="resultBackground" value="0,0,0"/>
@@ -61,7 +61,7 @@
 	-->
 
 	<words>
-		<boolean name="renderWords" value="true"/>
+		<boolean name="renderWords" value="false"/>
 		<string name="fontPath" value="_PATH_TO_FONT_"/>
 		<string name="text" value="Genius"/>
 		<float name="fontStartSize" value="35"/>
@@ -165,16 +165,16 @@
 	-->
 
 	<rectangles>
-		<boolean name="renderRectangles" value="false" />
+		<boolean name="renderRectangles" value="true" />
 		<boolean name="printSolidRectangles" value="true" />
-		<integer name="rectWidth" value="35"/>
-		<integer name="rectHeight" value="35"/>
+		<integer name="rectWidth" value="25"/>
+		<integer name="rectHeight" value="25"/>
 		<integer name="rectStepSizeWidth" value="1"/>
 		<integer name="rectStepSizeHeight" value="1"/>		
 		<integer name="rectMinWidth" value="4"/>
 		<integer name="rectMinHeight" value="4"/>
-		<integer name="rectOffsetX" value="5"/>
-		<integer name="rectOffsetY" value="5"/>
+		<integer name="rectOffsetX" value="3"/>
+		<integer name="rectOffsetY" value="3"/>
 	</rectangles>
 
 </artwork>
