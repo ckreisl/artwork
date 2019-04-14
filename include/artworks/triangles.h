@@ -18,35 +18,49 @@ Christoph Kreisl [2018]
 #ifndef TRIANGLES_H
 #define TRIANGLES_H
 
-#include <include/renderer/artworkgrey.h>
-#include <include/renderer/artworkcolor.h>
+#include <include/renderer/renderitem.h>
+#include <include/core/proplist.h>
+#include <QPointF>
 
-class Triangles : public ArtWorkGrey, public ArtWorkColor {
+class Triangles : public RenderItem {
 public:
     Triangles(const PropertyList &props);
+    ~Triangles();
 
-    void paint(int mean, unsigned int &x, unsigned int &y);
-    void paint(QColor mean, unsigned int &x, unsigned int &y);
+    inline void initBBox(QRect &bbox);
 
-    bool inline condition();
-    bool inline update();
+    void paint(QPainter &resultPainter,
+               QPen &resultPen,
+               QPainter &usedPainter,
+               int &mean,
+               unsigned int &x,
+               unsigned int &y);
 
-protected:
-    ~Triangles() { }
+    void paint(QPainter &resultPainter,
+               QPen &resultPen,
+               QPainter &usedPainter,
+               QColor &mean,
+               unsigned int &x,
+               unsigned int &y);
+
+    inline bool condition();
+    inline bool update(QRect &bbox);
+    inline const QString& getOutputName() const { return m_outputName; }
 
 private:
+    QString m_outputName;
+    bool m_isSolid;
+    unsigned int m_bboxWidth;
+    unsigned int m_bboxHeight;
+    unsigned int m_stepSizeWidth;
+    unsigned int m_stepSizeHeight;
+    unsigned int m_minSizeWidth;
+    unsigned int m_minSizeHeight;
+    unsigned int m_triangleOffsetX;
+    unsigned int m_triangleOffsetY;
+
     void getSamples(double &r1, double &r2);
     void generateTriangle(QPointF &x1, QPointF &x2, QPointF &x3, unsigned int &x, unsigned int &y);
-
-    bool isSolid;
-    unsigned int bboxWidth;
-    unsigned int bboxHeight;
-    unsigned int stepSizeWidth;
-    unsigned int stepSizeHeight;
-    unsigned int minSizeWidth;
-    unsigned int minSizeHeight;
-    unsigned int triangleOffsetX;
-    unsigned int triangleOffsetY;
 };
 
 #endif // TRIANGLES_H

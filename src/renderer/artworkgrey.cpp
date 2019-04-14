@@ -18,11 +18,11 @@ Christoph Kreisl [2018]
 #include <include/renderer/artworkgrey.h>
 #include <iostream>
 
-ArtWorkGrey::ArtWorkGrey(const PropertyList &props)
-    : ArtWork(props) {
+ArtWorkGrey::ArtWorkGrey(const PropertyList &props, RenderItem *renderItem)
+    : ArtWork(props, renderItem) {
 
     // init gray image
-    grayImg = new QImage(*inputImg);
+    grayImg = new QImage(*m_inputImg);
     grayImg->fill(QColor(255,255,255));
 
     // init size of 2D vector for summed-area table
@@ -38,22 +38,22 @@ ArtWorkGrey::~ArtWorkGrey() {
 }
 
 inline bool ArtWorkGrey::checkMeanThreshold(int &mean) {
-    return ((mean >= meanThresholdMin) && (mean <= meanThresholdMax));
+    return ((mean >= m_meanThresholdMin) && (mean <= m_meanThresholdMax));
 }
 
 inline bool ArtWorkGrey::checkPrintThreshold(int &variance) {
-    return variance < printThreshold;
+    return variance < m_printThreshold;
 }
 
 void ArtWorkGrey::preprocess() {
     // convert input image into grayscale image
-    QRgb *pixelPtr = 0;
-    QRgb *pixelGrayPtr = 0;
+    QRgb *pixelPtr = nullptr;
+    QRgb *pixelGrayPtr = nullptr;
     int gray = 0;
-    for(unsigned int y = 0; y < inputImg->height(); ++y) {
-        pixelPtr = (QRgb *)inputImg->scanLine(y);
+    for(unsigned int y = 0; y < m_inputImg->height(); ++y) {
+        pixelPtr = (QRgb *)m_inputImg->scanLine(y);
         pixelGrayPtr = (QRgb *)grayImg->scanLine(y);
-        for(unsigned int x = 0; x < inputImg->width(); ++x) {
+        for(unsigned int x = 0; x < m_inputImg->width(); ++x) {
             gray = qGray(pixelPtr[x]);
             pixelGrayPtr[x] = qRgb(gray, gray, gray);
         }
@@ -81,27 +81,27 @@ void ArtWorkGrey::calcMean(int &mean, unsigned int &imgX, unsigned int &imgY) {
     if(imgX > 0 && imgY > 0)
         mean += summedAreaTable[imgX-1][imgY-1];
     if(imgY > 0)
-        mean -= summedAreaTable[imgX-1+bbox.width()][imgY-1];
+        mean -= summedAreaTable[imgX-1+m_bbox.width()][imgY-1];
     if(imgX > 0)
-        mean -= summedAreaTable[imgX-1][imgY-1+bbox.height()];
+        mean -= summedAreaTable[imgX-1][imgY-1+m_bbox.height()];
 
-    mean += summedAreaTable[imgX+bbox.width()-1][imgY+bbox.height()-1];
-    mean /= (bbox.width() * bbox.height());
+    mean += summedAreaTable[imgX+m_bbox.width()-1][imgY+m_bbox.height()-1];
+    mean /= (m_bbox.width() * m_bbox.height());
 }
 
 void ArtWorkGrey::calcVar(int &variance, int &mean, unsigned int &imgX, unsigned int &imgY) {
-    QRgb *pixelPtr = 0;
+    QRgb *pixelPtr = nullptr;
     variance = 0;
     int var = 0;
-    for(unsigned int y = 0; y < bbox.height(); ++y) {
+    for(unsigned int y = 0; y < m_bbox.height(); ++y) {
         pixelPtr = (QRgb *)grayImg->scanLine(imgY+y);
-        for(unsigned int x = 0; x < bbox.width(); ++x) {
+        for(unsigned int x = 0; x < m_bbox.width(); ++x) {
             var = qRed(pixelPtr[imgX+x]) - mean;
             variance += (var * var);
         }
     }
 
-    variance /= (bbox.width() * bbox.height());
+    variance /= (m_bbox.width() * m_bbox.height());
 }
 
 void ArtWorkGrey::run() {
@@ -111,9 +111,9 @@ void ArtWorkGrey::run() {
     int variance = 0;
     int printed = 0;
 
-    while(condition()) {
-        unsigned int yMax = inputImg->height() - bbox.height();
-        unsigned int xMax = inputImg->width() - bbox.width();
+    while(m_renderItem->condition()) {
+        unsigned int yMax = m_inputImg->height() - m_bbox.height();
+        unsigned int xMax = m_inputImg->width() - m_bbox.width();
 
         /* Round Step Start */
         auto start = std::chrono::high_resolution_clock::now();
@@ -131,9 +131,12 @@ void ArtWorkGrey::run() {
                         // (5) check print threshold
                         if(checkPrintThreshold(variance)) {
                             // (6) print text on used and result image
-                            paint(mean, imgX, imgY);
+                            m_renderItem->paint(m_resultPainter,
+                                                m_resultPen,
+                                                m_usedPainter,
+                                                mean, imgX, imgY);
                             // (7) update x with bbox.width because of print
-                            imgX += bbox.width();
+                            imgX += m_bbox.width();
                             ++printed;
                         } else {
                             ++imgX;
@@ -152,10 +155,10 @@ void ArtWorkGrey::run() {
         cout << "Round runtime Grey: " << round_time.count() << "ms Printed: " << printed << endl;
         printed = 0;
 
-        printThreshold += printThresholdStepSize;
+        m_printThreshold += m_printThresholdStepSize;
 
         /* Round Step End */
-        if(!update())
+        if(!m_renderItem->update(m_bbox))
             break;
 
     }

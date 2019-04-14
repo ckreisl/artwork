@@ -20,6 +20,7 @@ Christoph Kreisl [2018]
 #include <include/core/proplist.h>
 #include <include/renderer/artworkcolor.h>
 #include <include/renderer/artworkgrey.h>
+#include <include/renderer/renderitem.h>
 #include <include/artworks/words.h>
 #include <include/artworks/circles.h>
 #include <include/artworks/triangles.h>
@@ -126,48 +127,52 @@ int app_artwork(int argc, char *argv[]) {
         std::vector<ArtWorkColor *> thrListColor;
         std::vector<ArtWorkGrey *> thrListGrey;
         if(renderWords) {
+            RenderItem *renderItem = new Words(*props);
             if(colorMode) {
-                ArtWorkColor *wp = new Words(*props);
+                ArtWorkColor *wp = new ArtWorkColor(*props, renderItem);
                 wp->start();
                 thrListColor.push_back(wp);
             } else {
-                ArtWorkGrey *wp = new Words(*props);
+                ArtWorkGrey *wp = new ArtWorkGrey(*props, renderItem);
                 wp->start();
                 thrListGrey.push_back(wp);
             }
         }
 
         if(renderTriangle) {
+            RenderItem *renderItem = new Triangles(*props);
             if(colorMode) {
-                ArtWorkColor *tp = new Triangles(*props);
+                ArtWorkColor *tp = new ArtWorkColor(*props, renderItem);
                 tp->start();
                 thrListColor.push_back(tp);
             } else {
-                ArtWorkGrey *tp = new Triangles(*props);
+                ArtWorkGrey *tp = new ArtWorkGrey(*props, renderItem);
                 tp->start();
                 thrListGrey.push_back(tp);
             }
         }
 
         if(renderCircles) {
+            RenderItem *renderItem = new Circles(*props);
             if(colorMode) {
-                ArtWorkColor *cp = new Circles(*props);
+                ArtWorkColor *cp = new ArtWorkColor(*props, renderItem);
                 cp->start();
                 thrListColor.push_back(cp);
             } else {
-                ArtWorkGrey *cp = new Circles(*props);
+                ArtWorkGrey *cp = new ArtWorkGrey(*props, renderItem);
                 cp->start();
                 thrListGrey.push_back(cp);
             }
         }
 
         if(renderRectangles) {
+            RenderItem *renderItem = new Rectangle(*props);
             if(colorMode) {
-                ArtWorkColor *cp = new Rectangle(*props);
+                ArtWorkColor *cp = new ArtWorkColor(*props, renderItem);
                 cp->start();
                 thrListColor.push_back(cp);
             } else {
-                ArtWorkGrey *cp = new Rectangle(*props);
+                ArtWorkGrey *cp = new ArtWorkGrey(*props, renderItem);
                 cp->start();
                 thrListGrey.push_back(cp);
             }

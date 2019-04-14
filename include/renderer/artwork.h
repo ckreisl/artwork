@@ -25,41 +25,42 @@ Christoph Kreisl [2018]
 #include <QString>
 
 #include <include/core/proplist.h>
+#include <include/renderer/renderitem.h>
 
 using namespace std;
 
 class ArtWork {
 public:
-    ArtWork(const PropertyList &props);
+    ArtWork(const PropertyList &props, RenderItem *renderItem);
+    virtual ~ArtWork();
 
     bool save();
     bool isEmpty(unsigned int &x, unsigned int &y);
 
-protected:
-    virtual ~ArtWork();
+    RenderItem *m_renderItem;
 
-    QString fileName;
-    QString outputName;
-    QString outputType;
+    QString m_fileName;
+    QString m_outputName;
+    QString m_outputType;
 
-    QImage *inputImg;
-    QImage *usedImg;
-    QImage *resultImg;
+    QImage *m_inputImg;
+    QImage *m_usedImg;
+    QImage *m_resultImg;
 
-    QPainter resultPainter;
-    QPainter usedPainter;
+    QPainter m_resultPainter;
+    QPainter m_usedPainter;
 
-    QPen resultPen;
-    QPen usedPen;
+    QPen m_resultPen;
+    QPen m_usedPen;
 
-    QRect bbox;
+    QRect m_bbox;
 
-    bool saveUsedImg;
-    unsigned int printThreshold;
-    unsigned int printThresholdStepSize;
-    unsigned int meanThresholdMin; /* min = 0 */
-    unsigned int meanThresholdMax; /* max = 255 */
-    QColor resultBackground;
+    bool m_saveUsedImg;
+    unsigned int m_printThreshold;
+    unsigned int m_printThresholdStepSize;
+    unsigned int m_meanThresholdMin; /* min = 0 */
+    unsigned int m_meanThresholdMax; /* max = 255 */
+    QColor m_resultBackground;
 
 private:
     /* nothing here */

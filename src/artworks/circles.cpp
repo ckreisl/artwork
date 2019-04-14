@@ -17,74 +17,86 @@ Christoph Kreisl [2018]
 
 #include <include/artworks/circles.h>
 #include <iostream>
+#include <QPoint>
+#include <QBrush>
 
 using namespace std;
 
-Circles::Circles(const PropertyList &props)
-    : ArtWork(props), ArtWorkGrey(props), ArtWorkColor(props) {
+Circles::Circles(const PropertyList &props) {
 
-    printSolid = props.getBoolean("printSolidCircles", false);
-    radiusX = props.getInteger("radiusX", 8);
-    radiusY = props.getInteger("radiusY", 8);
-    radiusXStepSize = props.getInteger("radiusXStepSize", 1);
-    radiusYStepSize = props.getInteger("radiusYStepSize", 1);
-    minRadiusX = props.getInteger("minRadiusX", 0);
-    minRadiusY = props.getInteger("minRadiusY", 0);
-    radiusOffsetX = props.getInteger("radiusOffsetX", 0);
-    radiusOffsetY = props.getInteger("radiusOffsetY", 0);
+    m_printSolid = props.getBoolean("printSolidCircles", false);
+    m_radiusX = props.getInteger("radiusX", 8);
+    m_radiusY = props.getInteger("radiusY", 8);
+    m_radiusXStepSize = props.getInteger("radiusXStepSize", 1);
+    m_radiusYStepSize = props.getInteger("radiusYStepSize", 1);
+    m_minRadiusX = props.getInteger("minRadiusX", 0);
+    m_minRadiusY = props.getInteger("minRadiusY", 0);
+    m_radiusOffsetX = props.getInteger("radiusOffsetX", 0);
+    m_radiusOffsetY = props.getInteger("radiusOffsetY", 0);
 
-    if(minRadiusX < radiusOffsetX)
-        radiusOffsetX = minRadiusX - 1;
-    if(minRadiusY < radiusOffsetY)
-        radiusOffsetY = minRadiusY - 1;
-
-    bbox = QRect();
-    bbox.setWidth((2*radiusX)+radiusOffsetX);
-    bbox.setHeight((2*radiusY)+radiusOffsetY);
+    if(m_minRadiusX < m_radiusOffsetX)
+        m_radiusOffsetX = m_minRadiusX - 1;
+    if(m_minRadiusY < m_radiusOffsetY)
+        m_radiusOffsetY = m_minRadiusY - 1;
 
     if(props.getBoolean("colorMode", true)) {
         if(QString::compare(props.getString("userCommandLineOutputName", ""), "", Qt::CaseInsensitive) == 0)
-            outputName += "_circles_color";
+            m_outputName = "circles_color";
     } else {
         if(QString::compare(props.getString("userCommandLineOutputName", ""), "", Qt::CaseInsensitive) == 0)
-            outputName += "_circles_grey";
+            m_outputName = "circles_grey";
     }
 }
 
-inline bool Circles::condition() {
-    return (radiusX > minRadiusX) && (radiusY > minRadiusY);
+Circles::~Circles() {
+
 }
 
-inline bool Circles::update() {
-    radiusX -= radiusXStepSize;
-    radiusY -= radiusYStepSize;
+inline void Circles::initBBox(QRect &bbox) {
+    bbox.setWidth((2*m_radiusX)+m_radiusOffsetX);
+    bbox.setHeight((2*m_radiusY)+m_radiusOffsetY);
+}
 
-    bbox.setWidth((2*radiusX)+radiusOffsetX);
-    bbox.setHeight((2*radiusY)+radiusOffsetY);
+inline bool Circles::condition() {
+    return (m_radiusX > m_minRadiusX) && (m_radiusY > m_minRadiusY);
+}
+
+inline bool Circles::update(QRect &bbox) {
+    m_radiusX -= m_radiusXStepSize;
+    m_radiusY -= m_radiusYStepSize;
+
+    bbox.setWidth((2*m_radiusX)+m_radiusOffsetX);
+    bbox.setHeight((2*m_radiusY)+m_radiusOffsetY);
 
     return true;
 }
 
-void Circles::paint(QColor mean, unsigned int &x, unsigned int &y) {
-    QPoint center(x+radiusX+(radiusOffsetX/2),y+radiusY+(radiusOffsetY/2));
+void Circles::paint(QPainter &resultPainter,
+                    QPen &resultPen,
+                    QPainter &usedPainter,
+                    QColor &mean, unsigned int &x, unsigned int &y) {
+    QPoint center(x+m_radiusX+(m_radiusOffsetX/2),y+m_radiusY+(m_radiusOffsetY/2));
     usedPainter.setBrush(QBrush(QColor(0,0,0), Qt::SolidPattern));
-    usedPainter.drawEllipse(center, radiusX, radiusY);
+    usedPainter.drawEllipse(center, m_radiusX, m_radiusY);
 
-    if(printSolid)
+    if(m_printSolid)
         resultPainter.setBrush(QBrush(mean, Qt::SolidPattern));
     resultPen.setColor(mean);
     resultPainter.setPen(resultPen);
-    resultPainter.drawEllipse(center, radiusX, radiusY);
+    resultPainter.drawEllipse(center, m_radiusX, m_radiusY);
 }
 
-void Circles::paint(int mean, unsigned int &x, unsigned int &y) {
-    QPoint center(x+radiusX+(radiusOffsetX/2), y+radiusY+(radiusOffsetY/2));
+void Circles::paint(QPainter &resultPainter,
+                    QPen &resultPen,
+                    QPainter &usedPainter,
+                    int &mean, unsigned int &x, unsigned int &y) {
+    QPoint center(x+m_radiusX+(m_radiusOffsetX/2), y+m_radiusY+(m_radiusOffsetY/2));
     usedPainter.setBrush(QBrush(QColor(0,0,0), Qt::SolidPattern));
-    usedPainter.drawEllipse(center, radiusX, radiusY);
+    usedPainter.drawEllipse(center, m_radiusX, m_radiusY);
 
-    if(printSolid)
+    if(m_printSolid)
         resultPainter.setBrush(QBrush(QColor(mean,mean,mean), Qt::SolidPattern));
     resultPen.setColor(QColor(mean,mean,mean));
     resultPainter.setPen(resultPen);
-    resultPainter.drawEllipse(center, radiusX, radiusY);
+    resultPainter.drawEllipse(center, m_radiusX, m_radiusY);
 }

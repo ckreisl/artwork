@@ -19,7 +19,7 @@ Christoph Kreisl [2018]
 #include <include/core/common.h>
 #include <iostream>
 
-ArtWork::ArtWork(const PropertyList &props) {
+ArtWork::ArtWork(const PropertyList &props, RenderItem *renderItem) {
 
     try {
         QString imgFilePath = "";
@@ -32,21 +32,21 @@ ArtWork::ArtWork(const PropertyList &props) {
                 throw std::runtime_error("Non or wrong image file type or forgot to set an image filepath!");
         }
 
-        fileName = getImageNameFromPath(imgFilePath);
+        m_fileName = getImageNameFromPath(imgFilePath);
 
         QString userCommandLineOutputName = props.getString("userCommandLineOutputName", "");
         if(QString::compare(userCommandLineOutputName,"", Qt::CaseInsensitive) != 0) {
-            outputName = userCommandLineOutputName;
-            if(checkImageType(outputName))
-                outputName = removeFileType(outputName);
+            m_outputName = userCommandLineOutputName;
+            if(checkImageType(m_outputName))
+                m_outputName = removeFileType(m_outputName);
         } else
-            outputName = fileName;
+            m_outputName = m_fileName;
 
         if(QString::compare(imgFilePath, "", Qt::CaseInsensitive) == 0)
             throw std::runtime_error("No image path was given. Set image path in .xml render settings file or with -i option");
 
-        inputImg = new QImage(imgFilePath);
-        if(inputImg->isNull())
+        m_inputImg = new QImage(imgFilePath);
+        if(m_inputImg->isNull())
             throw std::runtime_error("Could not load image file from given path. Image is invalid! Does the image exists or support the given file formats?");
     } catch(std::runtime_error &e) {
         std::cout << e.what() << std::endl;
@@ -56,43 +56,50 @@ ArtWork::ArtWork(const PropertyList &props) {
         exit(-1);
     }
 
-    usedImg = new QImage(*inputImg);
-    resultImg = new QImage(*inputImg);
-    usedImg->fill(QColor(255, 255, 255));
+    m_outputName += "_" + renderItem->getOutputName();
 
-    resultBackground = props.getColor("resultBackground", QColor(0,0,0));
-    resultImg->fill(resultBackground);
+    m_bbox = QRect();
+    m_renderItem = renderItem;
+    m_renderItem->initBBox(m_bbox);
 
-    resultPainter.begin(resultImg);
-    usedPainter.begin(usedImg);
+    m_usedImg = new QImage(*m_inputImg);
+    m_resultImg = new QImage(*m_inputImg);
+    m_usedImg->fill(QColor(255, 255, 255));
 
-    resultPen = QPen(QColor(0,0,0));
-    usedPen = QPen(QColor(0,0,0));
+    m_resultBackground = props.getColor("resultBackground", QColor(0,0,0));
+    m_resultImg->fill(m_resultBackground);
 
-    usedPainter.setPen(usedPen);
+    m_resultPainter.begin(m_resultImg);
+    m_usedPainter.begin(m_usedImg);
+
+    m_resultPen = QPen(QColor(0,0,0));
+    m_usedPen = QPen(QColor(0,0,0));
+
+    m_usedPainter.setPen(m_usedPen);
 
     /* load parameters via xml file */
-    meanThresholdMin = props.getInteger("meanThresholdMin", 0);
-    meanThresholdMax = props.getInteger("meanThresholdMax", 255);
-    printThreshold = props.getInteger("printThreshold", 35);
-    printThresholdStepSize = props.getInteger("printThresholdStepSize", 15);
-    saveUsedImg = props.getBoolean("saveUsedImg", false);
-    outputType = props.getString("imgFileFormatOutput", ".png");
+    m_meanThresholdMin = props.getInteger("meanThresholdMin", 0);
+    m_meanThresholdMax = props.getInteger("meanThresholdMax", 255);
+    m_printThreshold = props.getInteger("printThreshold", 35);
+    m_printThresholdStepSize = props.getInteger("printThresholdStepSize", 15);
+    m_saveUsedImg = props.getBoolean("saveUsedImg", false);
+    m_outputType = props.getString("imgFileFormatOutput", ".png");
 }
 
 ArtWork::~ArtWork() {
-    usedPainter.end();
-    resultPainter.end();
-    delete inputImg;
-    delete usedImg;
-    delete resultImg;
+    m_usedPainter.end();
+    m_resultPainter.end();
+    delete m_inputImg;
+    delete m_usedImg;
+    delete m_resultImg;
+    delete m_renderItem;
 }
 
 bool ArtWork::save() {
     try {
-        resultImg->save(outputName + outputType);
-        if(saveUsedImg)
-            usedImg->save(outputName + "_usedImg" + outputType);
+        m_resultImg->save(m_outputName + m_outputType);
+        if(m_saveUsedImg)
+            m_usedImg->save(m_outputName + "_usedImg" + m_outputType);
         return true;
     } catch(std::exception e) {
         cerr << "Could not save images: " << e.what() << endl;
@@ -101,10 +108,10 @@ bool ArtWork::save() {
 }
 
 bool ArtWork::isEmpty(unsigned int &imgX, unsigned int &imgY) {
-    QRgb *pixelPtr = 0;
-    for(unsigned int y = 0; y < bbox.height(); ++y) {
-        pixelPtr = (QRgb *)usedImg->scanLine(imgY+y);
-        for(unsigned int x = 0; x < bbox.width(); ++x) {
+    QRgb *pixelPtr = nullptr;
+    for(unsigned int y = 0; y < m_bbox.height(); ++y) {
+        pixelPtr = (QRgb *)m_usedImg->scanLine(imgY+y);
+        for(unsigned int x = 0; x < m_bbox.width(); ++x) {
             if(qRed(pixelPtr[imgX+x]) < 255)
                 return false;
         }

@@ -12,6 +12,7 @@ SOURCES += \
     src/renderer/artwork.cpp \
     src/main.cpp \
     src/core/common.cpp \
+    src/renderer/renderitem.cpp
 
 
 HEADERS += \
@@ -24,4 +25,5 @@ HEADERS += \
     include/renderer/artworkcolor.h \
     include/renderer/artworkgrey.h \
     include/core/common.h \
-    include/artworks/rectangle.h
+    include/artworks/rectangle.h \
+    include/renderer/renderitem.h

@@ -18,23 +18,20 @@ Christoph Kreisl [2018]
 #ifndef ARTWORKGREY_H
 #define ARTWORKGREY_H
 
+#include <QDebug>
 #include <QThread>
 #include <include/renderer/artwork.h>
 
-class ArtWorkGrey : virtual public ArtWork, public QThread {
+class ArtWorkGrey : public QThread, public ArtWork {
 public:
-    ArtWorkGrey(const PropertyList &props);
-    virtual ~ArtWorkGrey();
+    ArtWorkGrey(const PropertyList &props, RenderItem *renderItem);
+    ~ArtWorkGrey();
 
     void run();
     void calcMean(int &mean, unsigned int &imgX, unsigned int &imgY);
     void calcVar(int &variance, int &mean, unsigned int &imgX, unsigned int &imgY);
     inline bool checkMeanThreshold(int &mean);
     inline bool checkPrintThreshold(int &variance);
-
-    virtual void paint(int mean, unsigned int &x, unsigned int &y) = 0;
-    virtual inline bool condition() = 0;
-    virtual inline bool update() = 0;
 
 private:
     void preprocess();

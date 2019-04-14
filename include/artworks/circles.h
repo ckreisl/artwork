@@ -18,32 +18,45 @@ Christoph Kreisl [2018]
 #ifndef CIRCLES_H
 #define CIRCLES_H
 
-#include <include/renderer/artworkgrey.h>
-#include <include/renderer/artworkcolor.h>
+#include <include/renderer/renderitem.h>
+#include <include/core/proplist.h>
 
-class Circles : public ArtWorkGrey, public ArtWorkColor {
+class Circles : public RenderItem {
 public:
     Circles(const PropertyList &props);
+    ~Circles();
 
-    void paint(QColor mean, unsigned int &x, unsigned int &y);
-    void paint(int mean, unsigned int &x, unsigned int &y);
+    inline void initBBox(QRect &bbox);
 
-    bool inline condition();
-    bool inline update();
+    void paint(QPainter &resultPainter,
+               QPen &resultPen,
+               QPainter &usedPainter,
+               QColor &mean,
+               unsigned int &x,
+               unsigned int &y);
 
-protected:
-    virtual ~Circles() { }
+    void paint(QPainter &resultPainter,
+               QPen &resultPen,
+               QPainter &usedPainter,
+               int &mean,
+               unsigned int &x,
+               unsigned int &y);
+
+    inline bool condition();
+    inline bool update(QRect &bbox);
+    inline const QString& getOutputName() const { return m_outputName; }
 
 private:
-    bool printSolid;
-    unsigned int radiusX;
-    unsigned int radiusY;
-    unsigned int radiusXStepSize;
-    unsigned int radiusYStepSize;
-    unsigned int minRadiusX;
-    unsigned int minRadiusY;
-    unsigned int radiusOffsetX;
-    unsigned int radiusOffsetY;
+    QString m_outputName;
+    bool m_printSolid;
+    unsigned int m_radiusX;
+    unsigned int m_radiusY;
+    unsigned int m_radiusXStepSize;
+    unsigned int m_radiusYStepSize;
+    unsigned int m_minRadiusX;
+    unsigned int m_minRadiusY;
+    unsigned int m_radiusOffsetX;
+    unsigned int m_radiusOffsetY;
 };
 
 #endif // CIRCLES_H

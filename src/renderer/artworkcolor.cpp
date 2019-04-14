@@ -18,11 +18,11 @@ Christoph Kreisl [2018]
 #include <include/renderer/artworkcolor.h>
 #include <iostream>
 
-ArtWorkColor::ArtWorkColor(const PropertyList &props)
-    : ArtWork(props) {
+ArtWorkColor::ArtWorkColor(const PropertyList &props, RenderItem *renderItem)
+    : ArtWork(props, renderItem) {
 
-    unsigned int width = inputImg->width();
-    unsigned int height = inputImg->height();
+    unsigned int width = m_inputImg->width();
+    unsigned int height = m_inputImg->height();
 
     // init size of 2D vector for summed-area table
     summedAreaTableRed.resize(width);
@@ -37,28 +37,32 @@ ArtWorkColor::ArtWorkColor(const PropertyList &props)
     preprocess();
 }
 
+ArtWorkColor::~ArtWorkColor() {
+
+}
+
 inline bool ArtWorkColor::checkMeanThreshold(QColor &mean) {
-    return ((mean.red() >= meanThresholdMin) &&
-            (mean.green() >= meanThresholdMin) &&
-            (mean.blue() >= meanThresholdMin) &&
-            (mean.red() <= meanThresholdMax) &&
-            (mean.green() <= meanThresholdMax) &&
-            (mean.blue() <= meanThresholdMax));
+    return ((mean.red() >= m_meanThresholdMin) &&
+            (mean.green() >= m_meanThresholdMin) &&
+            (mean.blue() >= m_meanThresholdMin) &&
+            (mean.red() <= m_meanThresholdMax) &&
+            (mean.green() <= m_meanThresholdMax) &&
+            (mean.blue() <= m_meanThresholdMax));
 }
 
 inline bool ArtWorkColor::checkPrintThreshold(Vec3 &variance) {
-    return ((variance[0] < printThreshold) &&
-            (variance[1] < printThreshold) &&
-            (variance[2] < printThreshold));
+    return ((variance[0] < m_printThreshold) &&
+            (variance[1] < m_printThreshold) &&
+            (variance[2] < m_printThreshold));
 }
 
 void ArtWorkColor::preprocess() {
     // generate summed-area table to calculate mean of rectangle in O(1)
-    QRgb *pixelPtr = 0;
+    QRgb *pixelPtr = nullptr;
     int valueRed = 0, valueGreen = 0, valueBlue = 0;
-    for(unsigned int y = 0; y < inputImg->height(); ++y) {
-        pixelPtr = (QRgb *)inputImg->scanLine(y);
-        for(unsigned int x = 0; x < inputImg->width(); ++x) {
+    for(unsigned int y = 0; y < m_inputImg->height(); ++y) {
+        pixelPtr = (QRgb *)m_inputImg->scanLine(y);
+        for(unsigned int x = 0; x < m_inputImg->width(); ++x) {
             valueRed = qRed(pixelPtr[x]);
             valueGreen = qGreen(pixelPtr[x]);
             valueBlue = qBlue(pixelPtr[x]);
@@ -92,21 +96,21 @@ void ArtWorkColor::calcMean(QColor &mean, unsigned int &imgX, unsigned int &imgY
         meanBlue += summedAreaTableBlue[imgX-1][imgY-1];
     }
     if(imgY > 0) {
-        meanRed -= summedAreaTableRed[imgX-1+bbox.width()][imgY-1];
-        meanGreen -= summedAreaTableGreen[imgX-1+bbox.width()][imgY-1];
-        meanBlue -= summedAreaTableBlue[imgX-1+bbox.width()][imgY-1];
+        meanRed -= summedAreaTableRed[imgX-1+m_bbox.width()][imgY-1];
+        meanGreen -= summedAreaTableGreen[imgX-1+m_bbox.width()][imgY-1];
+        meanBlue -= summedAreaTableBlue[imgX-1+m_bbox.width()][imgY-1];
     }
     if(imgX > 0) {
-        meanRed -= summedAreaTableRed[imgX-1][imgY-1+bbox.height()];
-        meanGreen -= summedAreaTableGreen[imgX-1][imgY-1+bbox.height()];
-        meanBlue -= summedAreaTableBlue[imgX-1][imgY-1+bbox.height()];
+        meanRed -= summedAreaTableRed[imgX-1][imgY-1+m_bbox.height()];
+        meanGreen -= summedAreaTableGreen[imgX-1][imgY-1+m_bbox.height()];
+        meanBlue -= summedAreaTableBlue[imgX-1][imgY-1+m_bbox.height()];
     }
 
-    meanRed += summedAreaTableRed[imgX+bbox.width()-1][imgY+bbox.height()-1];
-    meanGreen += summedAreaTableGreen[imgX+bbox.width()-1][imgY+bbox.height()-1];
-    meanBlue += summedAreaTableBlue[imgX+bbox.width()-1][imgY+bbox.height()-1];
+    meanRed += summedAreaTableRed[imgX+m_bbox.width()-1][imgY+m_bbox.height()-1];
+    meanGreen += summedAreaTableGreen[imgX+m_bbox.width()-1][imgY+m_bbox.height()-1];
+    meanBlue += summedAreaTableBlue[imgX+m_bbox.width()-1][imgY+m_bbox.height()-1];
 
-    int n = (bbox.width() * bbox.height());
+    int n = (m_bbox.width() * m_bbox.height());
 
     meanRed /= n;
     meanGreen /= n;
@@ -118,11 +122,11 @@ void ArtWorkColor::calcMean(QColor &mean, unsigned int &imgX, unsigned int &imgY
 }
 
 void ArtWorkColor::calcVar(Vec3 &variance, QColor &mean, unsigned int &imgX, unsigned int &imgY) {
-    QRgb *pixelPtr = 0;
+    QRgb *pixelPtr = nullptr;
     int varRed = 0, varGreen = 0, varBlue = 0, tmp = 0;
-    for(unsigned int y = 0; y < bbox.height(); ++y) {
-        pixelPtr = (QRgb *)inputImg->scanLine(imgY+y);
-        for(unsigned int x = 0; x < bbox.width(); ++x) {
+    for(unsigned int y = 0; y < m_bbox.height(); ++y) {
+        pixelPtr = (QRgb *)m_inputImg->scanLine(imgY+y);
+        for(unsigned int x = 0; x < m_bbox.width(); ++x) {
             tmp = qRed(pixelPtr[imgX+x]) - mean.red();
             varRed += (tmp * tmp);
             tmp = qGreen(pixelPtr[imgX+x]) - mean.green();
@@ -132,7 +136,7 @@ void ArtWorkColor::calcVar(Vec3 &variance, QColor &mean, unsigned int &imgX, uns
         }
     }
 
-    int n = (bbox.width() * bbox.height());
+    int n = (m_bbox.width() * m_bbox.height());
 
     varRed /= n;
     varGreen /= n;
@@ -150,9 +154,9 @@ void ArtWorkColor::run() {
     Vec3 variance(3);
     int printed = 0;
 
-    while(condition()) {
-        unsigned int yMax = inputImg->height() - bbox.height();
-        unsigned int xMax = inputImg->width() - bbox.width();
+    while(m_renderItem->condition()) {
+        unsigned int yMax = m_inputImg->height() - m_bbox.height();
+        unsigned int xMax = m_inputImg->width() - m_bbox.width();
 
         /* Round Step Start */
         auto start = std::chrono::high_resolution_clock::now();
@@ -170,9 +174,12 @@ void ArtWorkColor::run() {
                         // (5) check print threshold
                         if(checkPrintThreshold(variance)) {
                             // (6) print text on used and result image
-                            paint(mean, imgX, imgY);
+                            m_renderItem->paint(m_resultPainter,
+                                                m_resultPen,
+                                                m_usedPainter,
+                                                mean, imgX, imgY);
                             // (7) update x with bbox.width because of print
-                            imgX += bbox.width();
+                            imgX += m_bbox.width();
                             ++printed;
                         } else {
                             ++imgX;
@@ -191,10 +198,10 @@ void ArtWorkColor::run() {
         cout << "Round runtime Color: " << round_time.count() << "ms Printed: " << printed << endl;
         printed = 0;
 
-        printThreshold += printThresholdStepSize;
+        m_printThreshold += m_printThresholdStepSize;
 
         /* Round Step End */
-        if(!update())
+        if(!m_renderItem->update(m_bbox))
             break;
 
     }

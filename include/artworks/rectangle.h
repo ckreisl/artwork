@@ -18,32 +18,45 @@ Christoph Kreisl [2018]
 #ifndef RECTANGLE_H
 #define RECTANGLE_H
 
-#include <include/renderer/artworkgrey.h>
-#include <include/renderer/artworkcolor.h>
+#include <include/renderer/renderitem.h>
+#include <include/core/proplist.h>
 
-class Rectangle : public ArtWorkGrey, public ArtWorkColor {
+class Rectangle : public RenderItem {
 public:
     Rectangle(const PropertyList &props);
+    ~Rectangle();
 
-    void paint(QColor mean, unsigned int &x, unsigned int &y);
-    void paint(int mean, unsigned int &x, unsigned int &y);
+    inline void initBBox(QRect &bbox);
 
-    bool inline condition();
-    bool inline update();
+    void paint(QPainter &resultPainter,
+               QPen &resultPen,
+               QPainter &usedPainter,
+               QColor &mean,
+               unsigned int &x,
+               unsigned int &y);
 
-protected:
-    virtual ~Rectangle() { }
+    void paint(QPainter &resultPainter,
+               QPen &resultPen,
+               QPainter &usedPainter,
+               int &mean,
+               unsigned int &x,
+               unsigned int &y);
+
+    inline bool condition();
+    inline bool update(QRect &bbox);
+    inline const QString& getOutputName() const { return m_outputName; }
 
 private:
-    bool printSolid;
-    unsigned int rectWidth;
-    unsigned int rectHeight;
-    unsigned int rectMinWidth;
-    unsigned int rectMinHeight;
-    unsigned int rectStepSizeWidth;
-    unsigned int rectStepSizeHeight;
-    unsigned int rectOffsetX;
-    unsigned int rectOffsetY;
+    QString m_outputName;
+    bool m_printSolid;
+    unsigned int m_rectWidth;
+    unsigned int m_rectHeight;
+    unsigned int m_rectMinWidth;
+    unsigned int m_rectMinHeight;
+    unsigned int m_rectStepSizeWidth;
+    unsigned int m_rectStepSizeHeight;
+    unsigned int m_rectOffsetX;
+    unsigned int m_rectOffsetY;
 };
 
 #endif // RECTANGLE_H

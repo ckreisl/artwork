@@ -17,70 +17,80 @@ Christoph Kreisl [2018]
 
 #include <include/artworks/rectangle.h>
 
-Rectangle::Rectangle(const PropertyList &props)
-    : ArtWork(props), ArtWorkGrey(props), ArtWorkColor(props) {
+Rectangle::Rectangle(const PropertyList &props) : RenderItem () {
 
-    printSolid = props.getBoolean("printSolidRectangles", false);
-    rectWidth = props.getInteger("rectWidth", 15);
-    rectHeight = props.getInteger("rectHeight", 15);
-    rectMinWidth = props.getInteger("rectMinWidth", 0);
-    rectMinHeight = props.getInteger("rectMinHeight", 0);
-    rectStepSizeWidth = props.getInteger("rectStepSizeWidth", 1);
-    rectStepSizeHeight = props.getInteger("rectStepSizeHeight", 1);
-    rectOffsetX = props.getInteger("rectOffsetX", 0);
-    rectOffsetY = props.getInteger("rectOffsetY", 0);
+    m_printSolid = props.getBoolean("printSolidRectangles", false);
+    m_rectWidth = props.getInteger("rectWidth", 15);
+    m_rectHeight = props.getInteger("rectHeight", 15);
+    m_rectMinWidth = props.getInteger("rectMinWidth", 0);
+    m_rectMinHeight = props.getInteger("rectMinHeight", 0);
+    m_rectStepSizeWidth = props.getInteger("rectStepSizeWidth", 1);
+    m_rectStepSizeHeight = props.getInteger("rectStepSizeHeight", 1);
+    m_rectOffsetX = props.getInteger("rectOffsetX", 0);
+    m_rectOffsetY = props.getInteger("rectOffsetY", 0);
 
-    if(rectMinWidth < rectOffsetX)
-        rectOffsetX = rectMinWidth - 1;
-    if(rectMinHeight < rectOffsetY)
-        rectOffsetY = rectMinHeight - 1;
-
-    bbox = QRect();
-    bbox.setWidth(rectWidth+rectOffsetX);
-    bbox.setHeight(rectHeight+rectOffsetY);
+    if(m_rectMinWidth < m_rectOffsetX)
+        m_rectOffsetX = m_rectMinWidth - 1;
+    if(m_rectMinHeight < m_rectOffsetY)
+        m_rectOffsetY = m_rectMinHeight - 1;
 
     if(props.getBoolean("colorMode", true)) {
         if(QString::compare(props.getString("userCommandLineOutputName", ""), "", Qt::CaseInsensitive) == 0)
-            outputName += "_rectangle_color";
+            m_outputName = "rectangle_color";
     } else {
         if(QString::compare(props.getString("userCommandLineOutputName", ""), "", Qt::CaseInsensitive) == 0)
-            outputName += "_rectangle_grey";
+            m_outputName = "rectangle_grey";
     }
 }
 
-void Rectangle::paint(QColor mean, unsigned int &x, unsigned int &y) {
-    usedPainter.setBrush(QBrush(QColor(0,0,0), Qt::SolidPattern));
-    usedPainter.drawRect(x, y, rectWidth, rectHeight);
+Rectangle::~Rectangle() {
 
-    if(printSolid)
+}
+
+inline void Rectangle::initBBox(QRect &bbox) {
+    bbox.setWidth(m_rectWidth+m_rectOffsetX);
+    bbox.setHeight(m_rectHeight+m_rectOffsetY);
+}
+
+void Rectangle::paint(QPainter &resultPainter,
+                      QPen &resultPen,
+                      QPainter &usedPainter,
+                      QColor &mean, unsigned int &x, unsigned int &y) {
+    usedPainter.setBrush(QBrush(QColor(0,0,0), Qt::SolidPattern));
+    usedPainter.drawRect(x, y, m_rectWidth, m_rectHeight);
+
+    if(m_printSolid)
         resultPainter.setBrush(QBrush(mean, Qt::SolidPattern));
     resultPen.setColor(mean);
     resultPainter.setPen(resultPen);
-    resultPainter.drawRect(x+rectOffsetX, y+rectOffsetY, rectWidth-rectOffsetX, rectHeight-rectOffsetY);
+    resultPainter.drawRect(x+m_rectOffsetX, y+m_rectOffsetY, m_rectWidth-m_rectOffsetX, m_rectHeight-m_rectOffsetY);
 }
 
-void Rectangle::paint(int mean, unsigned int &x, unsigned int &y) {
+void Rectangle::paint(QPainter &resultPainter,
+                      QPen &resultPen,
+                      QPainter &usedPainter,
+                      int &mean, unsigned int &x, unsigned int &y) {
 
     usedPainter.setBrush(QBrush(QColor(0,0,0), Qt::SolidPattern));
-    usedPainter.drawRect(x, y, rectWidth, rectHeight);
+    usedPainter.drawRect(x, y, m_rectWidth, m_rectHeight);
 
-    if(printSolid)
+    if(m_printSolid)
         resultPainter.setBrush(QBrush(QColor(mean,mean,mean), Qt::SolidPattern));
     resultPen.setColor(QColor(mean,mean,mean));
     resultPainter.setPen(resultPen);
-    resultPainter.drawRect(x+rectOffsetX, y+rectOffsetY, rectWidth-rectOffsetX, rectHeight-rectOffsetY);
+    resultPainter.drawRect(x+m_rectOffsetX, y+m_rectOffsetY, m_rectWidth-m_rectOffsetX, m_rectHeight-m_rectOffsetY);
 }
 
 inline bool Rectangle::condition() {
-    return (rectWidth > rectMinWidth) && (rectHeight > rectMinHeight);
+    return (m_rectWidth > m_rectMinWidth) && (m_rectHeight > m_rectMinHeight);
 }
 
-inline bool Rectangle::update() {
-    rectWidth -= rectStepSizeWidth;
-    rectHeight -= rectStepSizeHeight;
+inline bool Rectangle::update(QRect &bbox) {
+    m_rectWidth -= m_rectStepSizeWidth;
+    m_rectHeight -= m_rectStepSizeHeight;
 
-    bbox.setWidth(rectWidth);
-    bbox.setHeight(rectHeight);
+    bbox.setWidth(m_rectWidth);
+    bbox.setHeight(m_rectHeight);
 
     return true;
 }

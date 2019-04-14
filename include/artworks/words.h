@@ -18,31 +18,44 @@ Christoph Kreisl [2018]
 #ifndef WORDS_H
 #define WORDS_H
 
-#include <include/renderer/artworkgrey.h>
-#include <include/renderer/artworkcolor.h>
-
+#include <include/renderer/renderitem.h>
+#include <include/core/proplist.h>
 #include <QFont>
 
-class Words : public ArtWorkGrey, public ArtWorkColor {
+class Words : public RenderItem {
 public:
     Words(const PropertyList &props);
+    ~Words();
 
-    void paint(QColor mean, unsigned int &x, unsigned int &y);
-    void paint(int mean, unsigned int &x, unsigned int &y);
+    inline void initBBox(QRect &bbox);
 
-    bool inline condition();
-    bool inline update();
+    void paint(QPainter &resultPainter,
+               QPen &resultPen,
+               QPainter &usedPainter,
+               QColor &mean,
+               unsigned int &x,
+               unsigned int &y);
 
-protected:
-    virtual ~Words();
+    void paint(QPainter &resultPainter,
+               QPen &resultPen,
+               QPainter &usedPainter,
+               int &mean,
+               unsigned int &x,
+               unsigned int &y);
+
+    inline bool condition();
+    inline bool update(QRect &bbox);
+    inline const QString& getOutputName() const { return m_outputName; }
 
 private:
-    QFont *font;
-    qreal fontSize;
-    qreal fontCurSize;
-    qreal fontStepSize;
-    qreal fontMinSize;
-    QString text;
+    QString m_outputName;
+    QFont*  m_font;
+    qreal   m_fontSize;
+    qreal   m_fontCurSize;
+    qreal   m_fontStepSize;
+    qreal   m_fontMinSize;
+    QString m_text;
+    QRect*  m_bbox;
 };
 
 #endif // WORDS_H

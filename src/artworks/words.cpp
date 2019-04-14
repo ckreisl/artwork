@@ -22,15 +22,14 @@ Christoph Kreisl [2018]
 #include <QStringList>
 #include <QFontMetrics>
 
-Words::Words(const PropertyList &props)
-    : ArtWork(props), ArtWorkGrey(props), ArtWorkColor(props) {
+Words::Words(const PropertyList &props) : RenderItem () {
 
     /* round parameters */
-    text = props.getString("text", "c0op");
-    fontSize = props.getFloat("fontStartSize", 35);
-    fontStepSize = props.getFloat("fontStepSize", 1);
-    fontMinSize = props.getFloat("fontMinSize", 0.5);
-    fontCurSize = fontSize;
+    m_text = props.getString("text", "c0op");
+    m_fontSize = props.getFloat("fontStartSize", 35.0f);
+    m_fontStepSize = props.getFloat("fontStepSize", 1.0f);
+    m_fontMinSize = props.getFloat("fontMinSize", 0.5f);
+    m_fontCurSize = m_fontSize;
 
     /* font settings */
     QString pathFont = props.getString("fontPath", "");
@@ -42,53 +41,56 @@ Words::Words(const PropertyList &props)
     if(fontId > -1) {
         QStringList fontList = QFontDatabase::applicationFontFamilies(fontId);
         QString fontName = fontList[0];
-        font = new QFont(fontName);
+        m_font = new QFont(fontName);
     } else {
-        font = new QFont("Times");
+        m_font = new QFont("Times");
     }
 
-    font->setPointSizeF(fontSize);
-    QFontMetrics fontMetrics = QFontMetrics(*font);
-
-    bbox = fontMetrics.boundingRect(text);
-    bbox.setHeight(
-                (bbox.height()
-                 - (bbox.height()
-                    - fontMetrics.overlinePos())));
+    m_font->setPointSizeF(m_fontSize);
 
     if(props.getBoolean("colorMode", true)) {
         if(QString::compare(props.getString("userCommandLineOutputName", ""), "", Qt::CaseInsensitive) == 0)
-            outputName += "_words_color";
+            m_outputName = "words_color";
     } else {
         if(QString::compare(props.getString("userCommandLineOutputName", ""), "", Qt::CaseInsensitive) == 0)
-            outputName += "_words_grey";
+            m_outputName = "words_grey";
     }
 
 }
 
 Words::~Words() {
-    delete font;
+    delete m_font;
+}
+
+inline void Words::initBBox(QRect &bbox) {
+    m_bbox = &bbox;
+    QFontMetrics fontMetrics = QFontMetrics(*m_font);
+    bbox = fontMetrics.boundingRect(m_text);
+    bbox.setHeight(
+                (bbox.height()
+                 - (bbox.height()
+                    - fontMetrics.overlinePos())));
 }
 
 inline bool Words::condition() {
-    return fontCurSize > fontMinSize;
+    return m_fontCurSize > m_fontMinSize;
 }
 
-inline bool Words::update() {
+inline bool Words::update(QRect &bbox) {
 
-    fontCurSize -= fontStepSize;
+    m_fontCurSize -= m_fontStepSize;
 
-    if(font->pointSizeF() <= 0.5)
+    if(m_font->pointSizeF() <= 0.5)
         return false;
 
-    if(fontCurSize <= 0)
-        font->setPointSizeF(1.0);
+    if(m_fontCurSize <= 0)
+        m_font->setPointSizeF(1.0);
     else
-        font->setPointSizeF(fontCurSize);
+        m_font->setPointSizeF(m_fontCurSize);
 
-    QFontMetrics fontMetrics = QFontMetrics(*font);
+    QFontMetrics fontMetrics = QFontMetrics(*m_font);
 
-    bbox = fontMetrics.boundingRect(text);
+    bbox = fontMetrics.boundingRect(m_text);
     bbox.setHeight(
                 (bbox.height()
                  - (bbox.height()
@@ -97,22 +99,28 @@ inline bool Words::update() {
     return true;
 }
 
-void Words::paint(int mean, unsigned int &x, unsigned int &y) {
-    usedPainter.setFont(*font);
-    usedPainter.drawText(x, y + bbox.height(), text);
+void Words::paint(QPainter &resultPainter,
+                  QPen &resultPen,
+                  QPainter &usedPainter,
+                  int &mean, unsigned int &x, unsigned int &y) {
+    usedPainter.setFont(*m_font);
+    usedPainter.drawText(x, y + m_bbox->height(), m_text);
 
     resultPen.setColor(QColor(mean, mean , mean));
-    resultPainter.setFont(*font);
+    resultPainter.setFont(*m_font);
     resultPainter.setPen(resultPen);
-    resultPainter.drawText(x, y + bbox.height(), text);
+    resultPainter.drawText(x, y + m_bbox->height(), m_text);
 }
 
-void Words::paint(QColor mean, unsigned int &x, unsigned int &y) {
-    usedPainter.setFont(*font);
-    usedPainter.drawText(x, y + bbox.height(), text);
+void Words::paint(QPainter &resultPainter,
+                  QPen &resultPen,
+                  QPainter &usedPainter,
+                  QColor &mean, unsigned int &x, unsigned int &y) {
+    usedPainter.setFont(*m_font);
+    usedPainter.drawText(x, y + m_bbox->height(), m_text);
 
     resultPen.setColor(mean);
-    resultPainter.setFont(*font);
+    resultPainter.setFont(*m_font);
     resultPainter.setPen(resultPen);
-    resultPainter.drawText(x, y + bbox.height(), text);
+    resultPainter.drawText(x, y + m_bbox->height(), m_text);
 }
